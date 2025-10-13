@@ -15,10 +15,8 @@ const page = async  ({} : Iprops ) => {
 
   return (
     
-   
-   <div>
-    {user?.email}
-   </div>
+   <div></div>
+
   )
 }
 
