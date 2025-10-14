@@ -47,9 +47,7 @@ const Page = () => {
           Setting up your account...
         </h3>
         <p>
-          {isPending
-            ? 'Contacting server...'
-            : 'You will be redirected automatically.'}
+          {isPending ? 'Contacting server...' : 'You will be redirected automatically.'}
         </p>
       </div>
     </div>

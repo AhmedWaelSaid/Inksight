@@ -122,6 +122,17 @@ exports.Prisma.UserScalarFieldEnum = {
   stripeCurrentPeriodEnd: 'stripeCurrentPeriodEnd'
 };
 
+exports.Prisma.FileScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  url: 'url',
+  key: 'key',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  uploadStatus: 'uploadStatus',
+  userId: 'userId'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -131,10 +142,16 @@ exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
 };
-
+exports.UploadStatus = exports.$Enums.UploadStatus = {
+  PENDING: 'PENDING',
+  PROCSSING: 'PROCSSING',
+  SUCCESS: 'SUCCESS',
+  FAILED: 'FAILED'
+};
 
 exports.Prisma.ModelName = {
-  User: 'User'
+  User: 'User',
+  File: 'File'
 };
 
 /**

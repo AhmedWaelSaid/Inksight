@@ -31,7 +31,7 @@ const Navbar = ({} : Iprops ) => {
               variant:"ghost" ,
               size: "sm"
               })}>Login</LoginLink>
-              <RegisterLink  className={buttonVariants({
+              <RegisterLink className={buttonVariants({
               size: "sm",
               className:"text-zinc-700"
               })} >Sign-Up 

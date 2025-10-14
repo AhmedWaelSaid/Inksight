@@ -94,6 +94,17 @@ exports.Prisma.UserScalarFieldEnum = {
   stripeCurrentPeriodEnd: 'stripeCurrentPeriodEnd'
 };
 
+exports.Prisma.FileScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  url: 'url',
+  key: 'key',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  uploadStatus: 'uploadStatus',
+  userId: 'userId'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -103,10 +114,16 @@ exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
 };
-
+exports.UploadStatus = exports.$Enums.UploadStatus = {
+  PENDING: 'PENDING',
+  PROCSSING: 'PROCSSING',
+  SUCCESS: 'SUCCESS',
+  FAILED: 'FAILED'
+};
 
 exports.Prisma.ModelName = {
-  User: 'User'
+  User: 'User',
+  File: 'File'
 };
 /**
  * Create the Client
@@ -156,13 +173,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma/client\"\n}\n\ndatasource db {\n  provider = \"mongodb\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id                     String    @id @map(\"_id\")\n  email                  String    @unique\n  stripeCustomerId       String?   @unique @map(name: \"stripe_customer_id\")\n  stripeSubscriptionId   String?   @unique @map(name: \"stripe_subscription_id\")\n  stripePriceId          String?   @map(name: \"stripe_price_id\")\n  stripeCurrentPeriodEnd DateTime? @map(name: \"stripe_current_period_end\")\n}\n",
-  "inlineSchemaHash": "6b0b52027630aa57b34610613190e6109a6efcd69debd4953d08b0113024722c",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma/client\"\n}\n\ndatasource db {\n  provider = \"mongodb\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id                     String    @id @map(\"_id\")\n  email                  String    @unique\n  File                   File[]\n  stripeCustomerId       String?   @unique @map(name: \"stripe_customer_id\")\n  stripeSubscriptionId   String?   @unique @map(name: \"stripe_subscription_id\")\n  stripePriceId          String?   @map(name: \"stripe_price_id\")\n  stripeCurrentPeriodEnd DateTime? @map(name: \"stripe_current_period_end\")\n}\n\nenum UploadStatus {\n  PENDING\n  PROCSSING\n  SUCCESS\n  FAILED\n}\n\nmodel File {\n  id           String       @id @default(uuid()) @map(\"_id\")\n  name         String\n  url          String\n  key          String\n  createdAt    DateTime     @default(now())\n  updatedAt    DateTime     @updatedAt\n  uploadStatus UploadStatus @default(PENDING)\n  User         User?        @relation(fields: [userId], references: [id])\n  userId       String?\n}\n",
+  "inlineSchemaHash": "d7a73980b7fe30ee01dea38ee6239a8f932cbd9fe464effca2f34cd56361b745",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"stripeCustomerId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"stripe_customer_id\"},{\"name\":\"stripeSubscriptionId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"stripe_subscription_id\"},{\"name\":\"stripePriceId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"stripe_price_id\"},{\"name\":\"stripeCurrentPeriodEnd\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"stripe_current_period_end\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"File\",\"kind\":\"object\",\"type\":\"File\",\"relationName\":\"FileToUser\"},{\"name\":\"stripeCustomerId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"stripe_customer_id\"},{\"name\":\"stripeSubscriptionId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"stripe_subscription_id\"},{\"name\":\"stripePriceId\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"stripe_price_id\"},{\"name\":\"stripeCurrentPeriodEnd\",\"kind\":\"scalar\",\"type\":\"DateTime\",\"dbName\":\"stripe_current_period_end\"}],\"dbName\":null},\"File\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"url\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"key\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"uploadStatus\",\"kind\":\"enum\",\"type\":\"UploadStatus\"},{\"name\":\"User\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"FileToUser\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),
