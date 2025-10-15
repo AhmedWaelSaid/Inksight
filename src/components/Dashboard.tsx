@@ -2,11 +2,25 @@
 'use client'
 import { trpc } from '@/app/_trpc/client'
 import UploadButton from "./UploadButton"
-import { Ghost, Plus } from "lucide-react"
+import { Ghost, Loader, MessageSquare, Plus, Trash } from "lucide-react"
 import Skeleton from "react-loading-skeleton"
 import Link from "next/link"
 import { format } from "date-fns"
+import { Button } from './ui/button'
+import { buttonVariants } from '@/components/ui/button';
+import { useState } from 'react'
 
+// 🔧 Temporary interface for files data
+interface FileData {
+  userId: string | null;
+  id: string;
+  name: string;
+  url: string;
+  key: string;
+  createdAt: string;
+  updatedAt: string;
+  uploadStatus: 'PENDING' | 'PROCSSING' | 'SUCCESS' | 'FAILED';
+}
 
 interface Iprops {
 
@@ -14,8 +28,21 @@ interface Iprops {
 
 const Dashboard =  ({} : Iprops ) =>  {
 
-  const {data : files , isLoading } =  trpc.getUserFiles.useQuery()
-  const {data} = trpc.authcallback.useQuery()
+  const [currentdeleteFile , setcurrentdeleteFile] = useState<null|string>()
+
+const utilts = trpc.useUtils()
+  const {data : files , isLoading } =  trpc.getUserFiles.useQuery() as {data: FileData[] | undefined, isLoading: boolean}
+  const {mutate : deleteFile} = trpc.deleteFile.useMutation({
+    onSuccess: ()=> {
+      utilts.getUserFiles.invalidate()
+    },
+    onMutate: ({id})=> {
+      setcurrentdeleteFile(id)
+    } ,
+    onSettled:()=> {
+      setcurrentdeleteFile(null)
+    }
+  })
   return (
     <main className="mx-auto max-w-7xl md:p-10">
  <div className="mt-8 flex flex-col items-start justify-between gap-4 border-b border-gray-200 pb-5 sm:flex-row sm:items-center sm:gap-0">
@@ -36,7 +63,7 @@ const Dashboard =  ({} : Iprops ) =>  {
 <Link
                   href={`/dashboard/${file.id}`}
                   className='flex flex-col gap-2'>
-                  <div className='pt-6 px-6 flex w-full items-center justify-between space-x-6'>
+                  <div className='pt-6 px-6 flex w-full items-center justify-between space-x-6 space-y-1'>
                     <div className='h-10 w-10 flex-shrink-0 rounded-full bg-gradient-to-r from-cyan-500 to-blue-500' />
                     <div className='flex-1 truncate'>
                       <div className='flex items-center space-x-3'>
@@ -56,6 +83,14 @@ const Dashboard =  ({} : Iprops ) =>  {
                       'MMM yyyy'
                     )}
                   </div>
+                  <div className='flex items-center gap-2'>
+                    <MessageSquare className='h-4 w-4' />
+                    mocked
+                    
+                  </div>
+                  <Button onClick={()=> deleteFile({ id :file.id})} className={buttonVariants({variant:"destructive" , className:' hover:bg-red-800  hover:text-white cursor-pointer'})}>
+                   {currentdeleteFile===file.id? <Loader className='h-4 w-4 animate-spin'/> :  <Trash/>}
+                  </Button>
                   </div>      
         </li>
  ) }

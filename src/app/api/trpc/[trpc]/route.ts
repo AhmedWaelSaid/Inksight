@@ -8,9 +8,12 @@ export const handler = (req: Request) =>
     req,
     router: appRouter,
     createContext: async () => {
-      // 🧠 هنا بنجيب session المستخدم الحالي
       const session = getKindeServerSession()
-      return { session }
+      const user = await session.getUser()
+      return {
+        user,
+        userId: user?.id ?? null,
+      }
     },
   })
 
