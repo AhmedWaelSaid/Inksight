@@ -19,7 +19,7 @@ const page = async ({params} : Iprops )  => {
     if(!user || !user.id){
         redirect(`/auth-callback?origin=${fileid}`)
     }
-    const file = db.file.findFirst({
+    const file = await db.file.findFirst({
         where:{
             id: fileid ,
             userId : user.id
@@ -35,7 +35,7 @@ const page = async ({params} : Iprops )  => {
         <div className='flex-1 xl:flex'>
           <div className='px-4 py-6 sm:px-6 lg:pl-8 xl:flex-1 xl:pl-6'>
             {/* Main area */}
-            <PdfRenderer  />
+            <PdfRenderer url={`https://utfs.io/f/${file.key}`} />
           </div>
         </div>
 
