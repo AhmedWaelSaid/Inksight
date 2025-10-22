@@ -151,14 +151,14 @@ const UploadButton = ({}: Iprops) => {
       <DialogTrigger onClick={() => setIsopen(true)} asChild>
         <Button
           className={buttonVariants({
-            className: "cursor-pointer text-gray-700 ",
+            className: "cursor-pointer text-gray-700",
             variant: "default",
           })}
         >
           Upload your File
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent  className=" max-w-lg">
         <DialogHeader>
           <DialogTitle></DialogTitle>
         </DialogHeader>
