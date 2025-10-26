@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { Button } from "./ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import z, { string } from "zod";
+import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "@/lib/utils";

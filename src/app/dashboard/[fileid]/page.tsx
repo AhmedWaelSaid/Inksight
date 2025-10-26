@@ -13,7 +13,7 @@ params : {
 
 const page = async ({params} : Iprops )  => {
 
-    const {fileid}  =  params
+    const {fileid}  =  await params
 
     const {getUser} = await getKindeServerSession()
     const user = await getUser()

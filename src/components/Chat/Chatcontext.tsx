@@ -7,6 +7,7 @@ import {
   import { useMutation } from '@tanstack/react-query'
   import { trpc } from '@/app/_trpc/client'
   import { INFINITE_QUERY_LIMIT } from '@/config/infinite-query'
+  import { toast } from 'sonner'
   
   type StreamResponse = {
     addMessage: () => void
@@ -83,16 +84,16 @@ import {
               }
             }
   
-            let newPages = [...old.pages]
+            const newPages = [...old.pages]
   
-            let latestPage = newPages[0]!
+            const latestPage = newPages[0]!
   
             latestPage.messages = [
               {
                 createdAt: new Date().toISOString(),
                 id: crypto.randomUUID(),
                 text: message,
-                isUserMessage: true,
+                isUsermessage: true,
               },
               ...latestPage.messages,
             ]
@@ -119,12 +120,7 @@ import {
         setIsLoading(false)
   
         if (!stream) {
-          return toast({
-            title: 'There was a problem sending this message',
-            description:
-              'Please refresh this page and try again',
-            variant: 'destructive',
-          })
+          return toast('There was a problem sending this message. Please refresh this page and try again.')
         }
   
         const reader = stream.getReader()
@@ -148,14 +144,14 @@ import {
             (old) => {
               if (!old) return { pages: [], pageParams: [] }
   
-              let isAiResponseCreated = old.pages.some(
+              const isAiResponseCreated = old.pages.some(
                 (page) =>
                   page.messages.some(
                     (message) => message.id === 'ai-response'
                   )
               )
-  
-              let updatedPages = old.pages.map((page) => {
+
+              const updatedPages = old.pages.map((page) => {
                 if (page === old.pages[0]) {
                   let updatedMessages
   
@@ -165,7 +161,7 @@ import {
                         createdAt: new Date().toISOString(),
                         id: 'ai-response',
                         text: accResponse,
-                        isUserMessage: false,
+                        isUsermessage: false,
                       },
                       ...page.messages,
                     ]

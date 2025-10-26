@@ -3,7 +3,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { WebPDFLoader } from "@langchain/community/document_loaders/web/pdf";
 import { getPineconeClient } from "@/lib/pinecone";
-import { OpenAIEmbeddings } from "@langchain/openai";
+import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
 import { PineconeStore } from "@langchain/pinecone";
 
 const f = createUploadthing();
@@ -15,7 +15,7 @@ export const ourFileRouter = {
       maxFileCount: 1,
     },
   })
-    .middleware(async ({ req }) => {
+    .middleware(async () => {
       const { getUser } = getKindeServerSession();
       const user = await getUser();
 
@@ -40,14 +40,14 @@ export const ourFileRouter = {
         const blob = await res.blob();
         const Loader = new WebPDFLoader(blob);
         const pageleveldocs = await Loader.load();
-        const docsAmt = pageleveldocs.length;
         const pinecone = await getPineconeClient() 
 
        
-        const pineconeIndex = pinecone.index('ink-sight') 
+        const pineconeIndex = pinecone.index('ink-sight-gemini') 
         
-        const embeddings = new OpenAIEmbeddings({
-          openAIApiKey: process.env.OPENAI_API_KEY,
+        const embeddings = new GoogleGenerativeAIEmbeddings({
+          apiKey: process.env.GEMINI_API_KEY!,
+          model: "models/text-embedding-004"
         })
         
         await PineconeStore.fromDocuments(

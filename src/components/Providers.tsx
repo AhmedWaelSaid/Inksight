@@ -1,8 +1,8 @@
 "use client"
 import { trpc } from "@/app/_trpc/client"
-import { QueryClient } from "@tanstack/react-query"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { httpBatchLink } from "@trpc/react-query"
-import { PropsWithChildren, ReactNode, useState } from "react"
+import { ReactNode, useState } from "react"
 
 interface Iprops {
     children : ReactNode
@@ -18,8 +18,10 @@ const Providers = ({children} : Iprops ) => {
       ]}))
   return (
     <trpc.Provider queryClient={queryClient} client={trpcclient}>
-        
-        {children}</trpc.Provider>
+        <QueryClientProvider client={queryClient}>
+            {children}
+        </QueryClientProvider>
+    </trpc.Provider>
   )
 }
 

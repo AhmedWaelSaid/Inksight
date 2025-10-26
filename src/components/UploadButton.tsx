@@ -18,8 +18,6 @@ import { trpc } from "@/app/_trpc/client";
 import { useRouter } from "next/navigation";
 
 
-interface Iprops {}
-
 const UploadDropZone = () => {
   
  const router = useRouter()
@@ -137,7 +135,7 @@ const UploadDropZone = () => {
   );
 };
 
-const UploadButton = ({}: Iprops) => {
+const UploadButton = () => {
   const [Isopen, setIsopen] = useState<boolean>(false);
   return (
     <Dialog
@@ -169,7 +167,4 @@ const UploadButton = ({}: Iprops) => {
 };
 
 export default UploadButton;
-function usetoast() {
-  throw new Error("Function not implemented.");
-}
 

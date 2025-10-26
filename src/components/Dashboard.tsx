@@ -22,11 +22,7 @@ interface FileData {
   uploadStatus: 'PENDING' | 'PROCSSING' | 'SUCCESS' | 'FAILED';
 }
 
-interface Iprops {
-
-}
-
-const Dashboard =  ({} : Iprops ) =>  {
+const Dashboard = () => {
 
   const [currentdeleteFile , setcurrentdeleteFile] = useState<null|string>()
 

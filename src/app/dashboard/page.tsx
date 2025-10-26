@@ -4,11 +4,7 @@ import { db } from "@/db"
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server"
 import { redirect } from "next/navigation"
 
-interface Iprops {
-
-}
-
-const page = async  ({} : Iprops ) => {
+const page = async () => {
 
     const {getUser} = getKindeServerSession()
     const user =  await getUser()

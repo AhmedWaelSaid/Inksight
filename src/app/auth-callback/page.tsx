@@ -26,6 +26,7 @@ const Page = () => {
  
   useEffect(() => {
     if (isError && error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const code = (error as any)?.data?.code
       if (code === 'UNAUTHORIZED') {
         router.push('/sign-in')

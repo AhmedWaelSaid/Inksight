@@ -5,11 +5,7 @@ import { ArrowRight} from "lucide-react";
 import { LoginLink, RegisterLink } from '@kinde-oss/kinde-auth-nextjs/server';
 
 
-interface Iprops {
-
-}
-
-const Navbar = ({} : Iprops ) => {
+const Navbar = () => {
   return (
    <nav className="h-14 sticky bg-white/75 inset-x-0 top-0 z-30 w-full border-b border-gray-200 backdrop-blur-lg transition-all">
       <MaxwidthWrapper>
@@ -21,7 +17,7 @@ const Navbar = ({} : Iprops ) => {
           </Link>
           <div className=" hidden items-center space-x-4 sm:flex">
             <>
-            <Link href="/.pricing" className={buttonVariants({
+            <Link href="/pricing" className={buttonVariants({
               
               variant:"ghost" ,
               size: "sm"
