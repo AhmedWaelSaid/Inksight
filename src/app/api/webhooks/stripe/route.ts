@@ -61,18 +61,26 @@ export async function POST(request: Request) {
         session.subscription as string
       )
 
-    await db.user.update({
+    const user = await db.user.findFirst({
       where: {
         stripeSubscriptionId: subscription.id,
       },
-      data: {
-        stripePriceId: subscription.items.data[0]?.price.id,
-        stripeCurrentPeriodEnd: new Date(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (subscription as any).current_period_end * 1000
-        ),
-      },
     })
+
+    if (user) {
+      await db.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          stripePriceId: subscription.items.data[0]?.price.id,
+          stripeCurrentPeriodEnd: new Date(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (subscription as any).current_period_end * 1000
+          ),
+        },
+      })
+    }
   }
 
   return new Response(null, { status: 200 })

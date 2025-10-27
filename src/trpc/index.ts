@@ -53,6 +53,9 @@ export const appRouter = router({
       try {
         const { userId } = ctx
 
+        console.log('=== createStripeSession Debug ===');
+        console.log('userId:', userId);
+
         const billingUrl = absoluteUrl('/dashboard')
 
         if (!userId)
@@ -64,6 +67,16 @@ export const appRouter = router({
           },
         })
 
+        console.log('dbUser found:', !!dbUser);
+        if (dbUser) {
+          console.log('dbUser subscription data:', {
+            stripePriceId: dbUser.stripePriceId,
+            stripeCurrentPeriodEnd: dbUser.stripeCurrentPeriodEnd,
+            stripeCustomerId: dbUser.stripeCustomerId,
+            stripeSubscriptionId: dbUser.stripeSubscriptionId
+          });
+        }
+
         if (!dbUser)
           throw new TRPCError({ code: 'UNAUTHORIZED' })
 
@@ -74,16 +87,20 @@ export const appRouter = router({
           dbUser.stripeCurrentPeriodEnd.getTime() + 86_400_000 > Date.now()
         )
 
+        console.log('isSubscribed:', isSubscribed);
+
         if (
           isSubscribed &&
           dbUser.stripeCustomerId
         ) {
+          console.log('User is already subscribed, creating billing portal session');
           const stripeSession =
             await stripe.billingPortal.sessions.create({
               customer: dbUser.stripeCustomerId,
               return_url: billingUrl,
             })
 
+          console.log('Billing portal session created:', stripeSession.id);
           return { url: stripeSession.url }
         }
 
@@ -133,7 +150,10 @@ export const appRouter = router({
               },
             })
 
-          console.log('Stripe session created successfully:', stripeSession.id)
+          console.log('Stripe session created successfully:', stripeSession.id);
+          console.log('Session URL:', stripeSession.url);
+          console.log('Session metadata:', stripeSession.metadata);
+          console.log('=== End createStripeSession Debug ===');
           return { url: stripeSession.url }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (stripeError: any) {

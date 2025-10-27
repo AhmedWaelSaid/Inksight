@@ -50,7 +50,7 @@ const BillingForm = ({
       <form
         className='mt-12'
         onSubmit={handleSubmit}>
-        <Card>
+        <Card className='border-0'>
           <CardHeader>
             <CardTitle>Subscription Plan</CardTitle>
             <CardDescription>
