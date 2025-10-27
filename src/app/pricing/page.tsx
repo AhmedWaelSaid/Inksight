@@ -114,14 +114,14 @@ const Page = () => {
                     className={cn(
                       'relative rounded-2xl bg-white shadow-lg',
                       {
-                        'border-2 border-blue-600 shadow-blue-200':
+                        'border-2 border-green-600 shadow-green-200':
                           plan === 'Pro',
                         'border border-gray-200':
                           plan !== 'Pro',
                       }
                     )}>
                     {plan === 'Pro' && (
-                      <div className='absolute -top-5 left-0 right-0 mx-auto w-32 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 px-3 py-2 text-sm font-medium text-white'>
+                      <div className='absolute -top-5 left-0 right-0 mx-auto w-32 rounded-full bg-gradient-to-r from-green-600 to-cyan-600 px-3 py-2 text-sm font-medium text-white'>
                         Upgrade now
                       </div>
                     )}
@@ -170,7 +170,7 @@ const Page = () => {
                               {negative ? (
                                 <Minus className='h-6 w-6 text-gray-300' />
                               ) : (
-                                <Check className='h-6 w-6 text-blue-500' />
+                                <Check className='h-6 w-6 text-green-500' />
                               )}
                             </div>
                             {footnote ? (

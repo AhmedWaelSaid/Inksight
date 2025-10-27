@@ -28,7 +28,7 @@ const UseraccountNavbar = async ({
   const subscriptionPlan = await getUserSubscriptionPlan()
 
   return (
-    <DropdownMenu>
+    <DropdownMenu >
       <DropdownMenuTrigger
         asChild
         className='overflow-visible'>
