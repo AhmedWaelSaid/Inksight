@@ -9,7 +9,12 @@ export const handler = (req: Request) =>
     router: appRouter,
     createContext: async () => {
       const session = getKindeServerSession()
-      const user = await session.getUser()
+      let user
+      try {
+        user = await session.getUser()
+      } catch {
+        user = null
+      }
       return {
         user,
         userId: user?.id ?? null,

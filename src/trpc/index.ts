@@ -14,27 +14,32 @@ export const appRouter = router({
       throw new TRPCError({ code: 'UNAUTHORIZED' })
     }
 
-    // Check if user exists by id first
-    const existingUser = await db.user.findUnique({
-      where: { id: user.id },
-    })
-
-    if (!existingUser) {
-      // Check if user exists by email
-      const userByEmail = await db.user.findUnique({
+    try {
+      // Try to create user, or find if exists
+      const existingUser = await db.user.findUnique({
         where: { email: user.email },
       })
-      
-      if (!userByEmail) {
-        // Create new user only if doesn't exist by email either
-        await db.user.create({
-          data: {
-            id: user.id,
-            email: user.email,
-          },
-        })
+
+      if (existingUser) {
+        // User already exists
+        return { success: true }
       }
-      // If user exists by email but different id, we keep the existing user
+
+      // Create new user
+      await db.user.create({
+        data: {
+          id: user.id,
+          email: user.email,
+        },
+      })
+    } catch (error: any) {
+      // Handle duplicate email race condition
+      if (error?.code === 'P2002') {
+        // Another request created the user, that's fine
+        return { success: true }
+      }
+      // Re-throw other errors
+      throw error
     }
 
     return { success: true }
