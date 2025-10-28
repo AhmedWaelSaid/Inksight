@@ -5,82 +5,140 @@ import { WebPDFLoader } from "@langchain/community/document_loaders/web/pdf";
 import { getPineconeClient } from "@/lib/pinecone";
 import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
 import { PineconeStore } from "@langchain/pinecone";
+import { getUserSubscriptionPlan } from '@/lib/stripe';
+import { PLANS } from '@/config/Stripe';
 
 const f = createUploadthing();
 
-export const ourFileRouter = {
-  PDFUploader: f({
-    pdf: {
-      maxFileSize: "4MB",
-      maxFileCount: 1,
+const middleware = async () => {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+  
+  if (!user || !user.id) {
+    throw new Error("Unauthorized");
+  }
+
+  const subscriptionPlan = await getUserSubscriptionPlan();
+
+  return { subscriptionPlan, userId: user.id };
+};
+
+const onUploadComplete = async ({
+  metadata,
+  file,
+}: {
+  metadata: Awaited<ReturnType<typeof middleware>>;
+  file: {
+    key: string;
+    name: string;
+    url: string;
+  };
+}) => {
+  const isFileExist = await db.file.findFirst({
+    where: {
+      key: file.key,
     },
-  })
-    .middleware(async () => {
-      const { getUser } = getKindeServerSession();
-      const user = await getUser();
+  });
 
-      if (!user || !user.id) {
-        throw new Error("Unauthorized");
-      }
+  if (isFileExist) return;
 
-      return { userId: user.id };
-    })
-    .onUploadComplete(async ({ metadata, file }) => {
-      const CreatedFile = await db.file.create({
+  const createdFile = await db.file.create({
+    data: {
+      key: file.key,
+      name: file.name,
+      userId: metadata.userId,
+      url: file.url,
+      uploadStatus: "PROCESSING",
+    },
+  });
+
+  try {
+    const response = await fetch(file.url);
+    const blob = await response.blob();
+    const loader = new WebPDFLoader(blob);
+    const pageLevelDocs = await loader.load();
+    const pagesAmt = pageLevelDocs.length;
+
+    const { subscriptionPlan } = metadata;
+    const { isSubscribed } = subscriptionPlan;
+
+    const isProExceeded =
+      pagesAmt >
+      PLANS.find((plan) => plan.name === 'Pro')!.pagesPerPdf;
+    const isFreeExceeded =
+      pagesAmt >
+      PLANS.find((plan) => plan.name === 'Free')!.pagesPerPdf;
+
+    if (
+      (isSubscribed && isProExceeded) ||
+      (!isSubscribed && isFreeExceeded)
+    ) {
+      await db.file.update({
         data: {
-          key: file.key,
-          name: file.name,
-          userId: metadata.userId,
-          url: file.ufsUrl,
-          uploadStatus: "PROCESSING",
+          uploadStatus: "FAILED",
+        },
+        where: {
+          id: createdFile.id,
         },
       });
-      try {
-        const res = await fetch(file.ufsUrl);
-        const blob = await res.blob();
-        const Loader = new WebPDFLoader(blob);
-        const pageleveldocs = await Loader.load();
-        const pinecone = await getPineconeClient() 
+      return;
+    }
 
-       
-        const pineconeIndex = pinecone.index('ink-sight-gemini') 
-        
-        const embeddings = new GoogleGenerativeAIEmbeddings({
-          apiKey: process.env.GEMINI_API_KEY!,
-          model: "models/text-embedding-004"
-        })
-        
-        await PineconeStore.fromDocuments(
-          pageleveldocs,
-          embeddings,
-          {
-            pineconeIndex,
-            namespace: CreatedFile.id,
-          }
-        )
+    // vectorize and index entire document
+    const pinecone = await getPineconeClient();
+    const pineconeIndex = pinecone.index('ink-sight-gemini');
 
-        await db.file.update({
-          data: {
-            uploadStatus: "SUCCESS",
-          },
-          where: {
-            id: CreatedFile.id,
-          },
-        });
-      } catch (error) {
-        console.log(error);
-        await db.file.update({
-          data: {
-            uploadStatus: "FAILED",
-          },
-          where: {
-            id: CreatedFile.id,
-          },
-        });
+    const embeddings = new GoogleGenerativeAIEmbeddings({
+      apiKey: process.env.GEMINI_API_KEY!,
+      model: "models/text-embedding-004"
+    });
+
+    await PineconeStore.fromDocuments(
+      pageLevelDocs,
+      embeddings,
+      {
+        pineconeIndex,
+        namespace: createdFile.id,
       }
+    );
 
-      return { uploadedBy: metadata.userId };
-    }),
+    await db.file.update({
+      data: {
+        uploadStatus: "SUCCESS",
+      },
+      where: {
+        id: createdFile.id,
+      },
+    });
+  } catch (err) {
+    await db.file.update({
+      data: {
+        uploadStatus: "FAILED",
+      },
+      where: {
+        id: createdFile.id,
+      },
+    });
+  }
+};
+
+export const ourFileRouter = {
+  freePlanUploader: f({ 
+    pdf: { 
+      maxFileSize: "16MB",
+      maxFileCount: 1,
+    } 
+  })
+    .middleware(middleware)
+    .onUploadComplete(onUploadComplete),
+  proPlanUploader: f({ 
+    pdf: { 
+      maxFileSize: "32MB",
+      maxFileCount: 1,
+    } 
+  })
+    .middleware(middleware)
+    .onUploadComplete(onUploadComplete),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

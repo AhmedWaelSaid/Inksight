@@ -16,12 +16,18 @@ import { useUploadThing } from "@/lib/uploadthing";
 import { toast } from "sonner";
 import { trpc } from "@/app/_trpc/client";
 import { useRouter } from "next/navigation";
+import { getUserSubscriptionPlan } from "@/lib/stripe";
 
 
-const UploadDropZone = () => {
+interface UploadDropZoneProps {
+  subscriptionPlan: Awaited<ReturnType<typeof getUserSubscriptionPlan>>;
+}
+
+const UploadDropZone = ({ subscriptionPlan }: UploadDropZoneProps) => {
   
  const router = useRouter()
-  const { startUpload } = useUploadThing("PDFUploader");
+  const uploaderName = subscriptionPlan.isSubscribed ? "proPlanUploader" : "freePlanUploader";
+  const { startUpload } = useUploadThing(uploaderName);
   const [isUploadingFile, setisUploadingFile] = useState<boolean>(true);
   const [UploadProgress, setisUploadProgress] = useState<number>(0);
   const {mutate: startPolling} = trpc.getFile.useMutation({
@@ -103,7 +109,7 @@ const UploadDropZone = () => {
                   and Drop
                 </p>
                 <p className="text-xs text-zinc-700 font-semibold">
-                  PDF (Up to 4MB)
+                  PDF (Up to {subscriptionPlan.isSubscribed ? "32MB" : "16MB"})
                 </p>
               </div>
               {acceptedFiles && acceptedFiles[0] ? (
@@ -135,7 +141,11 @@ const UploadDropZone = () => {
   );
 };
 
-const UploadButton = () => {
+interface UploadButtonProps {
+  subscriptionPlan: Awaited<ReturnType<typeof getUserSubscriptionPlan>>;
+}
+
+const UploadButton = ({ subscriptionPlan }: UploadButtonProps) => {
   const [Isopen, setIsopen] = useState<boolean>(false);
   return (
     <Dialog
@@ -160,7 +170,7 @@ const UploadButton = () => {
         <DialogHeader>
           <DialogTitle></DialogTitle>
         </DialogHeader>
-        <UploadDropZone />
+        <UploadDropZone subscriptionPlan={subscriptionPlan} />
       </DialogContent>
     </Dialog>
   );
