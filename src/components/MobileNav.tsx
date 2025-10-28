@@ -1,6 +1,6 @@
 'use client'
 
-import { LogoutLink } from '@kinde-oss/kinde-auth-nextjs/components'
+import { LogoutLink, LoginLink, RegisterLink } from '@kinde-oss/kinde-auth-nextjs/components'
 import { ArrowRight, Menu } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -36,26 +36,24 @@ const MobileNav = ({ isAuth }: { isAuth: boolean }) => {
             {!isAuth ? (
               <>
                 <li>
-                  <Link
+                  <RegisterLink
                     onClick={() =>
-                      closeOnCurrent('/sign-up')
+                      closeOnCurrent('/api/auth/kinde/register')
                     }
-                    className='flex items-center w-full font-semibold text-green-600'
-                    href='/sign-up'>
+                    className='flex items-center w-full font-semibold text-green-600'>
                     Get started
                     <ArrowRight className='ml-2 h-5 w-5' />
-                  </Link>
+                  </RegisterLink>
                 </li>
                 <li className='my-3 h-px w-full bg-gray-300' />
                 <li>
-                  <Link
+                  <LoginLink
                     onClick={() =>
-                      closeOnCurrent('/sign-in')
+                      closeOnCurrent('/api/auth/kinde/login')
                     }
-                    className='flex items-center w-full font-semibold'
-                    href='/sign-in'>
+                    className='flex items-center w-full font-semibold'>
                     Sign in
-                  </Link>
+                  </LoginLink>
                 </li>
                 <li className='my-3 h-px w-full bg-gray-300' />
                 <li>

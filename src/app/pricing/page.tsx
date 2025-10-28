@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/tooltip'
 import UpgradeButton from '@/components/UpgradeButton'
 import { PLANS } from '@/config/Stripe'
+import { LoginLink, RegisterLink } from '@kinde-oss/kinde-auth-nextjs/server'
 
 import { cn } from '@/lib/utils'
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server'
@@ -214,28 +215,36 @@ const Page = async () => {
                     <div className='border-t border-gray-200' />
                     <div className='p-5'>
                       {plan === 'Free' ? (
-                        <Link
-                          href={
-                            user ? '/dashboard' : '/sign-in'
-                          }
-                          className={buttonVariants({
-                            className: 'w-full',
-                            variant: 'secondary',
-                          })}>
-                          {user ? 'Upgrade now' : 'Sign up'}
-                          <ArrowRight className='h-5 w-5 ml-1.5' />
-                        </Link>
+                        user ? (
+                          <Link
+                            href='/dashboard'
+                            className={buttonVariants({
+                              className: 'w-full',
+                              variant: 'secondary',
+                            })}>
+                            Upgrade now
+                            <ArrowRight className='h-5 w-5 ml-1.5' />
+                          </Link>
+                        ) : (
+                          <RegisterLink
+                            className={buttonVariants({
+                              className: 'w-full',
+                              variant: 'secondary',
+                            })}>
+                            Sign up
+                            <ArrowRight className='h-5 w-5 ml-1.5' />
+                          </RegisterLink>
+                        )
                       ) : user ? (
                         <UpgradeButton />
                       ) : (
-                        <Link
-                          href='/sign-in'
+                        <LoginLink
                           className={buttonVariants({
                             className: 'w-full',
                           })}>
-                          {user ? 'Upgrade now' : 'Sign up'}
+                          Sign in
                           <ArrowRight className='h-5 w-5 ml-1.5' />
-                        </Link>
+                        </LoginLink>
                       )}
                     </div>
                   </div>

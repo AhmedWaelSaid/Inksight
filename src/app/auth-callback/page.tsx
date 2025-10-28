@@ -29,7 +29,7 @@ const AuthCallbackContent = () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const code = (error as any)?.data?.code
       if (code === 'UNAUTHORIZED') {
-        router.push('/sign-in')
+        router.push('/api/auth/kinde/login')
       } else {
         console.error('Auth error:', error)
       }

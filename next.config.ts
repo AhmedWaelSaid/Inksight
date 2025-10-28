@@ -4,12 +4,12 @@ const nextConfig = {
     return [
       {
         source: "/sign-in",
-        destination: "/api/auth/login",
+        destination: "/api/auth/kinde/login",
         permanent: true,
       },
       {
         source: "/sign-up",
-        destination: "/api/auth/register",
+        destination: "/api/auth/kinde/register",
         permanent: true,
       },
     ];
