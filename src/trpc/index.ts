@@ -1,4 +1,3 @@
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { privateProcedure, publicProcedure, router } from "./trpc";
 import { TRPCError } from "@trpc/server";
 import { db } from "@/db";
@@ -8,47 +7,31 @@ import { stripe } from "@/lib/stripe";
 import { PLANS } from "@/config/Stripe";
 import { absoluteUrl } from "@/lib/utils";
 export const appRouter = router({
-  authcallback: publicProcedure.query(async () => {
-    try {
-      console.log(" [tRPC] Running authcallback...");
-
-      const session = getKindeServerSession();
-      let user
-      try {
-        user = await session.getUser();
-      } catch {
-        throw new TRPCError({ code: "UNAUTHORIZED" });
-      }
-
-      console.log(" [tRPC] Kinde user:", user);
-
-      if (!user || !user.id || !user.email) {
-        console.log(" [tRPC] Unauthorized: Missing user/id/email");
-        throw new TRPCError({ code: "UNAUTHORIZED" });
-      }
-
-      let dbUser = await db.user.findUnique({
-        where: { id: user.id },
-      });
-
-      console.log(" [tRPC] Found user:", dbUser);
-
-      if (!dbUser) {
-        dbUser = await db.user.create({
-          data: {
-            id: user.id,
-            email: user.email,
-          },
-        });
-        console.log(" [tRPC] Created new user:", dbUser);
-      }
-
-      return { success: true };
-    } catch (err) {
-      console.error(" [tRPC] Error in authcallback:", err);
-      // Treat any error here as UNAUTHORIZED so client redirects to sign-in
-      throw new TRPCError({ code: "UNAUTHORIZED" });
+  authCallback: publicProcedure.query(async ({ ctx }) => {
+    const { user } = ctx
+    
+    if (!user || !user.id || !user.email) {
+      throw new TRPCError({ code: 'UNAUTHORIZED' })
     }
+
+    // check if the user is in the database
+    const dbUser = await db.user.findFirst({
+      where: {
+        id: user.id,
+      },
+    })
+
+    if (!dbUser) {
+      // create user in db
+      await db.user.create({
+        data: {
+          id: user.id,
+          email: user.email,
+        },
+      })
+    }
+
+    return { success: true }
   }),
 
   createStripeSession: privateProcedure.mutation(

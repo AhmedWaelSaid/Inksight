@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, Suspense } from 'react'
+import { Suspense, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { trpc } from '../_trpc/client'
 import { Loader2 } from 'lucide-react'
@@ -10,46 +10,32 @@ const AuthCallbackContent = () => {
   const searchParams = useSearchParams()
   const origin = searchParams.get('origin') ?? undefined
 
- 
-  const { data, error, isError, isSuccess, isPending } =
-    trpc.authcallback.useQuery(undefined, {
-      retry: true,
-      retryDelay: 500,
-    })
+  const { data, error, isError } = trpc.authCallback.useQuery(undefined, {
+    retry: true,
+    retryDelay: 500,
+  })
 
-  
   useEffect(() => {
-    if (isSuccess && data?.success) {
+    if (data?.success) {
       router.push(origin ? `/${origin}` : '/dashboard')
     }
-  }, [isSuccess, data, origin, router])
- 
+  }, [data, origin, router])
+
   useEffect(() => {
-    if (isError && error) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const code = (error as any)?.data?.code
-      if (code === 'UNAUTHORIZED') {
-        router.push('/api/auth/kinde/login')
-      } else {
-        console.error('Auth error:', error)
-      }
+    if (isError && error?.data?.code === 'UNAUTHORIZED') {
+      router.push('/api/auth/kinde/login')
     }
   }, [isError, error, router])
 
  
   return (
-    <div className="w-full mt-24 flex justify-center">
-      <div className="flex flex-col items-center gap-2">
-        <Loader2
-          className="h-8 w-8 animate-spin text-zinc-800"
-          aria-label="Loading"
-        />
-        <h3 className="font-semibold text-xl">
+    <div className='w-full mt-24 flex justify-center'>
+      <div className='flex flex-col items-center gap-2'>
+        <Loader2 className='h-8 w-8 animate-spin text-zinc-800' />
+        <h3 className='font-semibold text-xl'>
           Setting up your account...
         </h3>
-        <p>
-          {isPending ? 'Contacting server...' : 'You will be redirected automatically.'}
-        </p>
+        <p>You will be redirected automatically.</p>
       </div>
     </div>
   )
@@ -59,15 +45,13 @@ const Page = () => {
   return (
     <Suspense 
       fallback={
-        <div className="w-full mt-24 flex justify-center">
-          <div className="flex flex-col items-center gap-2">
-            <Loader2
-              className="h-8 w-8 animate-spin text-zinc-800"
-              aria-label="Loading"
-            />
-            <h3 className="font-semibold text-xl">
+        <div className='w-full mt-24 flex justify-center'>
+          <div className='flex flex-col items-center gap-2'>
+            <Loader2 className='h-8 w-8 animate-spin text-zinc-800' />
+            <h3 className='font-semibold text-xl'>
               Setting up your account...
             </h3>
+            <p>You will be redirected automatically.</p>
           </div>
         </div>
       }

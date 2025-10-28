@@ -102,8 +102,8 @@ const Page = async () => {
 
         <div className='pt-12 grid grid-cols-1 gap-10 lg:grid-cols-2'>
           <TooltipProvider>
-            {pricingItems.map(
-              async ({ plan, tagline, quota, features }) => {
+          {pricingItems.map(
+              ({ plan, tagline, quota, features }) => {
                 const price =
                   PLANS.find(
                     (p) => p.slug === plan.toLowerCase()

@@ -10,7 +10,6 @@ if (!stripeKey) {
 }
 
 export const stripe = new Stripe(stripeKey, {
-  apiVersion: "2025-09-30.clover",
   typescript: true,
 });
 
