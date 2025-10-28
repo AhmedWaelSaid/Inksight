@@ -34,10 +34,9 @@ export async function POST(request: Request) {
   }
 
   if (event.type === 'checkout.session.completed') {
-    const subscription =
-      await stripe.subscriptions.retrieve(
-        session.subscription as string
-      )
+    const subscription = await stripe.subscriptions.retrieve(
+      session.subscription as string
+    )
 
     await db.user.update({
       where: {
@@ -48,7 +47,6 @@ export async function POST(request: Request) {
         stripeCustomerId: subscription.customer as string,
         stripePriceId: subscription.items.data[0]?.price.id,
         stripeCurrentPeriodEnd: new Date(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (subscription as any).current_period_end * 1000
         ),
       },
@@ -56,26 +54,32 @@ export async function POST(request: Request) {
   }
 
   if (event.type === 'invoice.payment_succeeded') {
-    const subscription =
-      await stripe.subscriptions.retrieve(
-        session.subscription as string
-      )
+    // Retrieve the subscription details from Stripe.
+    const invoice = event.data.object as any
+    const subscriptionId = typeof invoice.subscription === 'string' 
+      ? invoice.subscription 
+      : invoice.subscription?.id
+
+    if (!subscriptionId) {
+      return new Response(null, { status: 200 })
+    }
+
+    const subscription = await stripe.subscriptions.retrieve(subscriptionId)
 
     const user = await db.user.findFirst({
       where: {
-        stripeSubscriptionId: subscription.id,
-      },
+        stripeCustomerId: typeof subscription.customer === 'string' 
+          ? subscription.customer 
+          : subscription.customer?.id
+      }
     })
 
     if (user) {
       await db.user.update({
-        where: {
-          id: user.id,
-        },
+        where: { id: user.id },
         data: {
           stripePriceId: subscription.items.data[0]?.price.id,
           stripeCurrentPeriodEnd: new Date(
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (subscription as any).current_period_end * 1000
           ),
         },

@@ -57,19 +57,21 @@ const AuthCallbackContent = () => {
 
 const Page = () => {
   return (
-    <Suspense fallback={
-      <div className="w-full mt-24 flex justify-center">
-        <div className="flex flex-col items-center gap-2">
-          <Loader2
-            className="h-8 w-8 animate-spin text-zinc-800"
-            aria-label="Loading"
-          />
-          <h3 className="font-semibold text-xl">
-            Setting up your account...
-          </h3>
+    <Suspense 
+      fallback={
+        <div className="w-full mt-24 flex justify-center">
+          <div className="flex flex-col items-center gap-2">
+            <Loader2
+              className="h-8 w-8 animate-spin text-zinc-800"
+              aria-label="Loading"
+            />
+            <h3 className="font-semibold text-xl">
+              Setting up your account...
+            </h3>
+          </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <AuthCallbackContent />
     </Suspense>
   )

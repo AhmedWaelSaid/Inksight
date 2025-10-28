@@ -21,9 +21,9 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 
-const Page = () => {
+const Page = async () => {
   const { getUser } = getKindeServerSession()
-  const user = getUser()
+  const user = await getUser()
 
   const pricingItems = [
     {
@@ -216,16 +216,16 @@ const Page = () => {
                       {plan === 'Free' ? (
                         <Link
                           href={
-                            await user ? '/dashboard' : '/sign-in'
+                            user ? '/dashboard' : '/sign-in'
                           }
                           className={buttonVariants({
                             className: 'w-full',
                             variant: 'secondary',
                           })}>
-                          {await user ? 'Upgrade now' : 'Sign up'}
+                          {user ? 'Upgrade now' : 'Sign up'}
                           <ArrowRight className='h-5 w-5 ml-1.5' />
                         </Link>
-                      ) : await user ? (
+                      ) : user ? (
                         <UpgradeButton />
                       ) : (
                         <Link
@@ -233,7 +233,7 @@ const Page = () => {
                           className={buttonVariants({
                             className: 'w-full',
                           })}>
-                          {await user ? 'Upgrade now' : 'Sign up'}
+                          {user ? 'Upgrade now' : 'Sign up'}
                           <ArrowRight className='h-5 w-5 ml-1.5' />
                         </Link>
                       )}
