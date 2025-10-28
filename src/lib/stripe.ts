@@ -57,7 +57,9 @@ export async function getUserSubscriptionPlan() {
     const stripePlan = await stripe.subscriptions.retrieve(
       dbUser.stripeSubscriptionId
     );
-    isCanceled = (stripePlan as any).cancel_at_period_end;
+    // Handle both string and object customer shapes and optional property
+    const plan = stripePlan as unknown as { cancel_at_period_end?: boolean };
+    isCanceled = Boolean(plan.cancel_at_period_end);
   }
 
   return {

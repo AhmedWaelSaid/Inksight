@@ -110,7 +110,7 @@ const onUploadComplete = async ({
         id: createdFile.id,
       },
     });
-  } catch (err) {
+  } catch {
     await db.file.update({
       data: {
         uploadStatus: "FAILED",
