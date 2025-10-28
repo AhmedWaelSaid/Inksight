@@ -14,17 +14,28 @@ export const appRouter = router({
       throw new TRPCError({ code: 'UNAUTHORIZED' })
     }
 
-    // Use upsert to handle existing users gracefully
-    await db.user.upsert({
-      where: {
-        id: user.id,
-      },
-      update: {},
-      create: {
-        id: user.id,
-        email: user.email,
-      },
+    // Check if user exists by id first
+    const existingUser = await db.user.findUnique({
+      where: { id: user.id },
     })
+
+    if (!existingUser) {
+      // Check if user exists by email
+      const userByEmail = await db.user.findUnique({
+        where: { email: user.email },
+      })
+      
+      if (!userByEmail) {
+        // Create new user only if doesn't exist by email either
+        await db.user.create({
+          data: {
+            id: user.id,
+            email: user.email,
+          },
+        })
+      }
+      // If user exists by email but different id, we keep the existing user
+    }
 
     return { success: true }
   }),
