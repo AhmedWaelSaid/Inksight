@@ -13,7 +13,12 @@ export const appRouter = router({
       console.log(" [tRPC] Running authcallback...");
 
       const session = getKindeServerSession();
-      const user = await session.getUser();
+      let user
+      try {
+        user = await session.getUser();
+      } catch {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
 
       console.log(" [tRPC] Kinde user:", user);
 
@@ -41,10 +46,8 @@ export const appRouter = router({
       return { success: true };
     } catch (err) {
       console.error(" [tRPC] Error in authcallback:", err);
-      throw new TRPCError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Something went wrong in authcallback",
-      });
+      // Treat any error here as UNAUTHORIZED so client redirects to sign-in
+      throw new TRPCError({ code: "UNAUTHORIZED" });
     }
   }),
 
