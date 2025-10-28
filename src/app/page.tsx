@@ -3,6 +3,7 @@ import MaxwidthWrapper from "../components/MaxwidthWrapper";
 import { buttonVariants } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
+import { RegisterLink } from "@kinde-oss/kinde-auth-nextjs/components";
 export default function Home() {
   return (
     <>
@@ -17,10 +18,11 @@ export default function Home() {
           seconds.
         </h1>
         <p className="mt-5 max-w-prose text-zinc-700 sm:text-lg ">
-          Read-H allows you have conversations with and pdf document. Simply
+          Inksight allows you have conversations with and pdf document. Simply
           upload your file and start asking questions right away
         </p>
-        <Link
+    
+        <RegisterLink
           href="/dashboard"
           target="_blank"
           className={buttonVariants({
@@ -29,7 +31,7 @@ export default function Home() {
           })}
         >
           Start Now <ArrowRight className="ml-1 h-5 w-5 size-2" />
-        </Link>
+          </RegisterLink>
       </MaxwidthWrapper>
 
       <div>
@@ -85,7 +87,7 @@ export default function Home() {
               Start chatting in minutes
             </h2>
             <p className="mt-4 text-lg text-gray-600">
-              Chatting to your PDF files has never been easier than with Read-H.
+              Chatting to your PDF files has never been easier than with Inksight.
             </p>
           </div>
         </div>
@@ -128,7 +130,7 @@ export default function Home() {
                 Start asking questions
               </span>
               <span className="mt-2 text-zinc-700">
-                It&apos;s that simple. Try out Read-H today - it really takes
+                It&apos;s that simple. Try out Inksight today - it really takes
                 less than a minute.
               </span>
             </div>
