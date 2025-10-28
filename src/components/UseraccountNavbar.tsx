@@ -11,7 +11,7 @@ import Image from 'next/image'
 import { Icons } from './Icons'
 import Link from 'next/link'
 import { Gem } from 'lucide-react'
-import { LogoutLink } from '@kinde-oss/kinde-auth-nextjs/server'
+import { LogoutLink } from '@kinde-oss/kinde-auth-nextjs/components'
 import { Avatar, AvatarFallback } from './ui/avatar'
 
 interface UseraccountNavbarProps {
@@ -90,8 +90,8 @@ const UseraccountNavbar = async ({
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem className='cursor-pointer'>
-            <LogoutLink>Log out</LogoutLink>
+        <DropdownMenuItem asChild>
+          <LogoutLink className='cursor-pointer'>Log out</LogoutLink>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
