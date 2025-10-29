@@ -1,5 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
-import { Metadata } from "next";
+import { Metadata, Viewport } from "next";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -45,12 +45,17 @@ export function constructMetadata({
     },
     icons,
     metadataBase: new URL("https://inksight-xi.vercel.app"),
-    themeColor: "#FFF",
     ...(noIndex && {
       robots: {
         index: false,
         follow: false,
       },
     }),
+  };
+}
+
+export function constructViewport(): Viewport {
+  return {
+    themeColor: "#FFF",
   };
 }

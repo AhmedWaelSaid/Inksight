@@ -7,7 +7,7 @@ import Providers from './../components/Providers';
 import "react-loading-skeleton/dist/skeleton.css"
 import { Toaster } from "@/components/ui/sonner";
 import 'simplebar-react/dist/simplebar.min.css'
-import { constructMetadata } from './../lib/utils';
+import { constructMetadata, constructViewport } from './../lib/utils';
 
 
 const geistSans = Geist({
@@ -21,6 +21,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = constructMetadata();
+export const viewport = constructViewport();
 
 export default function RootLayout({
   children,
