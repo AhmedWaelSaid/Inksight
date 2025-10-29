@@ -32,9 +32,9 @@ export const appRouter = router({
           email: user.email,
         },
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Handle duplicate email race condition
-      if (error?.code === 'P2002') {
+      if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
         // Another request created the user, that's fine
         return { success: true }
       }

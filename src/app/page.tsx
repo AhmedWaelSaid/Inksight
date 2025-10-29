@@ -3,7 +3,7 @@ import MaxwidthWrapper from "../components/MaxwidthWrapper";
 import { buttonVariants } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
-import { RegisterLink } from "@kinde-oss/kinde-auth-nextjs/components";
+import { LoginLink } from "@kinde-oss/kinde-auth-nextjs/server";
 export default function Home() {
   return (
     <>
@@ -22,16 +22,15 @@ export default function Home() {
           upload your file and start asking questions right away
         </p>
     
-        <RegisterLink
-          href="/dashboard"
-          target="_blank"
+        <LoginLink
+          postLoginRedirectURL="/dashboard"
           className={buttonVariants({
             className: "text-zinc-700 mt-5",
             size: "lg",
           })}
         >
           Start Now <ArrowRight className="ml-1 h-5 w-5 size-2" />
-          </RegisterLink>
+        </LoginLink>
       </MaxwidthWrapper>
 
       <div>
